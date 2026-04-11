@@ -2,43 +2,122 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Tile from './Tile.jsx'
 
+// Tests assert color *families* (blue/red/orange/green) rather than
+// exact Tailwind shades, so tweaking the gradient palette later
+// doesn't break the suite. Behavior-level, not pixel-level.
+
 describe('Tile', () => {
-  it('renders a grassland tile with its score', () => {
-    render(
-      <Tile
-        tile={{
-          id: 0,
-          row: 0,
-          col: 0,
-          type: 'grassland',
-          difficulty: 'medium',
-          score: 200,
-          ownedBy: null,
-          questionId: null,
-        }}
-      />
-    )
-    expect(screen.getByText('200')).toBeInTheDocument()
+  describe('grassland', () => {
+    it('renders the score', () => {
+      render(
+        <Tile
+          tile={{
+            id: 0,
+            type: 'grassland',
+            difficulty: 'medium',
+            score: 200,
+          }}
+        />
+      )
+      expect(screen.getByText('200')).toBeInTheDocument()
+    })
+
+    it('renders difficulty pips with the correct aria label', () => {
+      render(
+        <Tile
+          tile={{ id: 0, type: 'grassland', difficulty: 'hard', score: 300 }}
+        />
+      )
+      const pips = screen.getByLabelText(/difficulty: hard/)
+      expect(pips).toBeInTheDocument()
+      // Always renders 3 pip elements regardless of difficulty.
+      expect(pips.children.length).toBe(3)
+    })
+
+    it('uses a green background family', () => {
+      const { container } = render(
+        <Tile
+          tile={{ id: 0, type: 'grassland', difficulty: 'easy', score: 100 }}
+        />
+      )
+      expect(container.firstChild.className).toMatch(/green|lime|emerald/)
+    })
+
+    it('is marked as interactive (cursor-pointer + hover classes)', () => {
+      const { container } = render(
+        <Tile
+          tile={{ id: 0, type: 'grassland', difficulty: 'easy', score: 100 }}
+        />
+      )
+      const cls = container.firstChild.className
+      expect(cls).toMatch(/cursor-pointer/)
+      expect(cls).toMatch(/hover:/)
+    })
   })
 
-  it('renders a water tile with no content', () => {
-    const { container } = render(
-      <Tile tile={{ id: 1, type: 'water' }} />
-    )
-    const cell = container.firstChild
-    expect(cell).toHaveClass('bg-blue-400')
-    expect(cell.textContent).toBe('')
+  describe('water', () => {
+    it('uses a blue/sky background family', () => {
+      const { container } = render(<Tile tile={{ id: 1, type: 'water' }} />)
+      expect(container.firstChild.className).toMatch(/blue|sky/)
+    })
+
+    it('has no visible score or glyph text', () => {
+      render(<Tile tile={{ id: 1, type: 'water' }} />)
+      expect(screen.queryByText(/\d+/)).not.toBeInTheDocument()
+      expect(screen.queryByText('🏠')).not.toBeInTheDocument()
+      expect(screen.queryByText('🔥')).not.toBeInTheDocument()
+    })
+
+    it('is NOT interactive (no cursor-pointer)', () => {
+      const { container } = render(<Tile tile={{ id: 1, type: 'water' }} />)
+      expect(container.firstChild.className).not.toMatch(/cursor-pointer/)
+    })
   })
 
-  it('renders a house tile with team color', () => {
-    const { container } = render(
-      <Tile tile={{ id: 2, type: 'house', ownedBy: 'B' }} />
-    )
-    expect(container.firstChild).toHaveClass('bg-red-600')
+  describe('house', () => {
+    it('team A uses a blue family', () => {
+      const { container } = render(
+        <Tile tile={{ id: 2, type: 'house', ownedBy: 'A' }} />
+      )
+      expect(container.firstChild.className).toMatch(/blue/)
+    })
+
+    it('team B uses a red family', () => {
+      const { container } = render(
+        <Tile tile={{ id: 2, type: 'house', ownedBy: 'B' }} />
+      )
+      expect(container.firstChild.className).toMatch(/red/)
+    })
+
+    it('renders the house glyph', () => {
+      render(<Tile tile={{ id: 2, type: 'house', ownedBy: 'A' }} />)
+      expect(screen.getByText('🏠')).toBeInTheDocument()
+    })
+
+    it('is NOT interactive', () => {
+      const { container } = render(
+        <Tile tile={{ id: 2, type: 'house', ownedBy: 'A' }} />
+      )
+      expect(container.firstChild.className).not.toMatch(/cursor-pointer/)
+    })
   })
 
-  it('renders a burnt tile', () => {
-    const { container } = render(<Tile tile={{ id: 3, type: 'burnt' }} />)
-    expect(container.firstChild).toHaveClass('bg-gray-800')
+  describe('burnt', () => {
+    it('uses a dark background and orange text', () => {
+      const { container } = render(<Tile tile={{ id: 3, type: 'burnt' }} />)
+      const cls = container.firstChild.className
+      expect(cls).toMatch(/zinc|gray|stone|slate/)
+      expect(cls).toMatch(/orange/)
+    })
+
+    it('renders the fire glyph', () => {
+      render(<Tile tile={{ id: 3, type: 'burnt' }} />)
+      expect(screen.getByText('🔥')).toBeInTheDocument()
+    })
+
+    it('is NOT interactive', () => {
+      const { container } = render(<Tile tile={{ id: 3, type: 'burnt' }} />)
+      expect(container.firstChild.className).not.toMatch(/cursor-pointer/)
+    })
   })
 })
