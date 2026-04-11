@@ -20,12 +20,15 @@ describe('App routing', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders the Game page at /game/:sessionId with a board', () => {
-    const { container } = renderAt('/game/demo')
-    // Board is the grid with 49 children — find it via CSS grid marker.
-    const grids = container.querySelectorAll('.grid')
-    const boardGrid = Array.from(grids).find((el) => el.children.length === 49)
-    expect(boardGrid).toBeTruthy()
+  it('renders the not-configured shell on /game/:sessionId when Firebase is absent', () => {
+    // In the test env, .env.test has placeholder values so
+    // firebaseConfigured is false and useSession short-circuits.
+    // The Game page should fall through to its not-configured shell
+    // rather than try to render a board.
+    renderAt('/game/demo')
+    expect(
+      screen.getByText(/برای ورود به بازی، ابتدا Firebase/)
+    ).toBeInTheDocument()
   })
 
   it('shows the admin login form at /admin', () => {
