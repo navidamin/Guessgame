@@ -1,11 +1,18 @@
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import Board from '../components/Board.jsx'
 import ScoreBar from '../components/ScoreBar.jsx'
+import { generateBoard } from '../lib/boardGen.js'
 
-// Phase 1: renders a static 7x7 placeholder board so we can confirm
-// layout + Tailwind before wiring session state in Phase 3.
+// Phase 2: renders a seeded board derived from the session id.
+// In Phase 3 this will be replaced by a Firestore-backed session
+// listener so both teams see identical boards.
 export default function Game() {
   const { sessionId } = useParams()
+  const tiles = useMemo(
+    () => generateBoard(sessionId || 'default'),
+    [sessionId]
+  )
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -16,7 +23,7 @@ export default function Game() {
       />
 
       <div className="mt-6">
-        <Board />
+        <Board tiles={tiles} />
       </div>
 
       <p className="mt-6 text-center text-xs text-slate-500">
