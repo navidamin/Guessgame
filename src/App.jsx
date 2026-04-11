@@ -3,14 +3,20 @@ import Home from './pages/Home.jsx'
 import Game from './pages/Game.jsx'
 import Admin from './pages/Admin.jsx'
 import { firebaseConfigured } from './lib/firebase.js'
+import useFirestoreHealth from './hooks/useFirestoreHealth.js'
 
 export default function App() {
+  const { status, error } = useFirestoreHealth()
+
   return (
     <div dir="rtl" className="min-h-screen bg-slate-900 text-slate-100 font-vazir">
       <header className="border-b border-slate-800 px-6 py-3 flex items-center justify-between">
-        <Link to="/" className="text-xl font-bold">
-          بازی کاشی
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/" className="text-xl font-bold">
+            بازی کاشی
+          </Link>
+          <HealthBadge status={status} />
+        </div>
         <nav className="flex gap-4 text-sm">
           <Link to="/" className="hover:text-emerald-400">خانه</Link>
           <Link to="/admin" className="hover:text-emerald-400">مدیریت</Link>
@@ -23,6 +29,12 @@ export default function App() {
         </div>
       )}
 
+      {status === 'error' && (
+        <div className="bg-red-900/40 border-b border-red-700 text-red-200 text-sm px-6 py-2 text-center">
+          خطای اتصال به Firestore: <code>{error?.code || error?.message || 'unknown'}</code>
+        </div>
+      )}
+
       <main className="px-6 py-8">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -32,6 +44,19 @@ export default function App() {
         </Routes>
       </main>
     </div>
+  )
+}
+
+function HealthBadge({ status }) {
+  const map = {
+    idle: { label: 'تنظیم نشده', cls: 'bg-slate-700 text-slate-300' },
+    checking: { label: 'در حال بررسی…', cls: 'bg-amber-600/40 text-amber-200' },
+    ok: { label: 'Firestore ✓', cls: 'bg-emerald-600/40 text-emerald-200' },
+    error: { label: 'Firestore ✗', cls: 'bg-red-600/40 text-red-200' },
+  }
+  const { label, cls } = map[status] ?? map.idle
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded-full ${cls}`}>{label}</span>
   )
 }
 
