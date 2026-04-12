@@ -8,7 +8,7 @@ import Tile from './Tile.jsx'
 
 describe('Tile', () => {
   describe('grassland', () => {
-    it('renders the score', () => {
+    it('does NOT show the score number (only difficulty circles)', () => {
       render(
         <Tile
           tile={{
@@ -19,7 +19,7 @@ describe('Tile', () => {
           }}
         />
       )
-      expect(screen.getByText('200')).toBeInTheDocument()
+      expect(screen.queryByText('200')).not.toBeInTheDocument()
     })
 
     it('renders difficulty pips with the correct aria label', () => {

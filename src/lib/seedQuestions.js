@@ -1,14 +1,10 @@
-// Seed questions for development and initial testing.
+// Seed questions for development and gameplay testing.
 //
-// 36 entries: one per (topic × difficulty) combination, so the game
-// flow can never dead-end on a topic+tile combo that has no question.
-// Document IDs are stable ("seed-<slug>-<difficulty>-01") so re-running
-// the seed is idempotent — setDoc overwrites instead of duplicating.
-//
-// This is explicitly NOT the final content — the real question set
-// (50 per topic, per PLAN.md) will be generated later and loaded
-// through the admin batch uploader. Treat these as placeholders,
-// adequate for exercising the game loop end-to-end.
+// 60 entries (36 base + 24 extra): two per topic spread across
+// difficulties so repeated picks have variety. Even "easy" questions
+// require real knowledge — nothing trivially guessable.
+// Document IDs are stable ("seed-<slug>-<difficulty>-NN") so
+// re-running the seed is idempotent — setDoc overwrites, not duplicates.
 
 export const SEED_QUESTIONS = [
   // جغرافیا — Geography
@@ -321,5 +317,223 @@ export const SEED_QUESTIONS = [
     hint1: 'شاعر و عارف بزرگ پارسی‌گو، اهل بلخ.',
     hint2: 'بیشتر عمرش را در قونیه گذراند و مثنوی معنوی را سرود.',
     answer: 'جلال‌الدین محمد بلخی (مولوی)',
+  },
+
+  // ── 24 extra questions (2 per topic) ──
+
+  // جغرافیا
+  {
+    id: 'seed-geography-easy-02',
+    topic: 'جغرافیا',
+    difficulty: 'easy',
+    hint1: 'بزرگ‌ترین دریاچه جهان که ایران در ساحل جنوبی آن قرار دارد.',
+    hint2: 'با وجود نام «دریا» از نظر جغرافیایی یک دریاچه محسوب می‌شود.',
+    answer: 'دریای خزر',
+  },
+  {
+    id: 'seed-geography-hard-02',
+    topic: 'جغرافیا',
+    difficulty: 'hard',
+    hint1: 'کویری در مرکز ایران که یکی از خشک‌ترین نقاط زمین است.',
+    hint2: 'نام آن به معنی «تشنه» است و دمای سطح آن تا ۷۰ درجه ثبت شده.',
+    answer: 'دشت لوت',
+  },
+
+  // تاریخ ایران
+  {
+    id: 'seed-history-iran-medium-02',
+    topic: 'تاریخ ایران',
+    difficulty: 'medium',
+    hint1: 'شاه عباس پایتخت صفویان را به این شهر منتقل کرد.',
+    hint2: 'ضرب‌المثل «نصف جهان» درباره این شهر است.',
+    answer: 'اصفهان',
+  },
+  {
+    id: 'seed-history-iran-hard-02',
+    topic: 'تاریخ ایران',
+    difficulty: 'hard',
+    hint1: 'عهدنامه‌ای که بخش‌هایی از قفقاز را از ایران جدا کرد.',
+    hint2: 'در سال ۱۸۲۸ میان ایران و روسیه امضا شد.',
+    answer: 'عهدنامه ترکمنچای',
+  },
+
+  // تاریخ جهان
+  {
+    id: 'seed-history-world-easy-02',
+    topic: 'تاریخ جهان',
+    difficulty: 'easy',
+    hint1: 'تمدنی باستانی که اهرام بزرگ را ساخت.',
+    hint2: 'در کنار رود نیل شکل گرفت و فراعنه بر آن حکومت می‌کردند.',
+    answer: 'مصر باستان',
+  },
+  {
+    id: 'seed-history-world-hard-02',
+    topic: 'تاریخ جهان',
+    difficulty: 'hard',
+    hint1: 'جنگی که ناپلئون بناپارت در آن شکست نهایی خود را تجربه کرد.',
+    hint2: 'در سال ۱۸۱۵ در بلژیک رخ داد و به تبعید او به جزیره سنت هلن منجر شد.',
+    answer: 'نبرد واترلو',
+  },
+
+  // سینمای ایران
+  {
+    id: 'seed-cinema-iran-easy-02',
+    topic: 'سینمای ایران',
+    difficulty: 'easy',
+    hint1: 'کارگردان فیلم «جدایی نادر از سیمین».',
+    hint2: 'دو بار برنده اسکار بهترین فیلم بین‌المللی شده است.',
+    answer: 'اصغر فرهادی',
+  },
+  {
+    id: 'seed-cinema-iran-medium-02',
+    topic: 'سینمای ایران',
+    difficulty: 'medium',
+    hint1: 'فیلمی از اصغر فرهادی که داستان یک زوج ایرانی در حال طلاق است.',
+    hint2: 'اولین فیلم ایرانی برنده اسکار بهترین فیلم خارجی‌زبان در سال ۲۰۱۲.',
+    answer: 'جدایی نادر از سیمین',
+  },
+
+  // سینمای جهان
+  {
+    id: 'seed-cinema-world-medium-02',
+    topic: 'سینمای جهان',
+    difficulty: 'medium',
+    hint1: 'فیلمی درباره یک بوکسور ایتالیایی‌تبار در فیلادلفیا.',
+    hint2: 'سیلوستر استالونه هم نویسنده و هم بازیگر آن بود و در سال ۱۹۷۶ اکران شد.',
+    answer: 'راکی',
+  },
+  {
+    id: 'seed-cinema-world-hard-02',
+    topic: 'سینمای جهان',
+    difficulty: 'hard',
+    hint1: 'کارگردانی که سه‌گانه «ارباب حلقه‌ها» را ساخت.',
+    hint2: 'اهل نیوزیلند است و «بازگشت پادشاه» ۱۱ اسکار برد.',
+    answer: 'پیتر جکسون',
+  },
+
+  // موسیقی
+  {
+    id: 'seed-music-easy-02',
+    topic: 'موسیقی',
+    difficulty: 'easy',
+    hint1: 'آهنگساز اتریشی که از کودکی نابغه شناخته شد.',
+    hint2: 'سمفونی‌ها و اپراهای معروفی مثل «فلوت جادویی» دارد و در ۳۵ سالگی درگذشت.',
+    answer: 'موتسارت',
+  },
+  {
+    id: 'seed-music-hard-02',
+    topic: 'موسیقی',
+    difficulty: 'hard',
+    hint1: 'ساز سنتی ایرانی با کاسه‌ای چوبی و پوست کشیده شده.',
+    hint2: 'معمولاً با دست نواخته می‌شود و در موسیقی سنتی و عرفانی کاربرد دارد.',
+    answer: 'تنبک',
+  },
+
+  // ورزش
+  {
+    id: 'seed-sports-easy-02',
+    topic: 'ورزش',
+    difficulty: 'easy',
+    hint1: 'ورزش ملی ایران که ریشه در تاریخ کهن دارد.',
+    hint2: 'در زورخانه انجام می‌شود و با میل و کباده همراه است.',
+    answer: 'ورزش باستانی (زورخانه‌ای)',
+  },
+  {
+    id: 'seed-sports-medium-02',
+    topic: 'ورزش',
+    difficulty: 'medium',
+    hint1: 'تنیسوری که ۲۰ عنوان گرنداسلم برده و ملقب به «پادشاه خاک» است.',
+    hint2: 'اهل اسپانیاست و در رولان گاروس بیشترین قهرمانی تاریخ را دارد.',
+    answer: 'رافائل نادال',
+  },
+
+  // علم و فناوری
+  {
+    id: 'seed-science-easy-02',
+    topic: 'علم و فناوری',
+    difficulty: 'easy',
+    hint1: 'سیاره‌ای در منظومه شمسی که به «سیاره سرخ» معروف است.',
+    hint2: 'ناسا چندین مریخ‌نورد به سطح آن فرستاده است.',
+    answer: 'مریخ',
+  },
+  {
+    id: 'seed-science-hard-02',
+    topic: 'علم و فناوری',
+    difficulty: 'hard',
+    hint1: 'ریاضیدان و ستاره‌شناس ایرانی که تقویم جلالی را تدوین کرد.',
+    hint2: 'رباعیات او در غرب بسیار مشهور است و از نیشابور بود.',
+    answer: 'عمر خیام',
+  },
+
+  // ادبیات
+  {
+    id: 'seed-literature-easy-02',
+    topic: 'ادبیات',
+    difficulty: 'easy',
+    hint1: 'شاعر شیرازی که غزل‌هایش در سراسر جهان شناخته شده است.',
+    hint2: 'لقب «لسان‌الغیب» دارد و دیوانش برای فال استفاده می‌شود.',
+    answer: 'حافظ',
+  },
+  {
+    id: 'seed-literature-medium-02',
+    topic: 'ادبیات',
+    difficulty: 'medium',
+    hint1: 'نویسنده فرانسوی «شازده کوچولو» که خلبان هم بود.',
+    hint2: 'در سال ۱۹۴۴ با هواپیما ناپدید شد و کتابش پرفروش‌ترین رمان تاریخ است.',
+    answer: 'آنتوان دو سنت‌اگزوپری',
+  },
+
+  // هنر و معماری
+  {
+    id: 'seed-art-easy-02',
+    topic: 'هنر و معماری',
+    difficulty: 'easy',
+    hint1: 'بنایی سفید مرمرین در هند که یک شاهکار معماری اسلامی است.',
+    hint2: 'شاه‌جهان آن را به یاد همسرش ممتاز محل ساخت.',
+    answer: 'تاج محل',
+  },
+  {
+    id: 'seed-art-medium-02',
+    topic: 'هنر و معماری',
+    difficulty: 'medium',
+    hint1: 'نقاشی معروفی از لئوناردو داوینچی با لبخندی مرموز.',
+    hint2: 'در موزه لوور پاریس نگهداری می‌شود و «لا جوکوندا» نیز نامیده می‌شود.',
+    answer: 'مونالیزا',
+  },
+
+  // طبیعت و حیوانات
+  {
+    id: 'seed-nature-easy-02',
+    topic: 'طبیعت و حیوانات',
+    difficulty: 'easy',
+    hint1: 'سریع‌ترین حیوان خشکی جهان.',
+    hint2: 'گربه‌سان خال‌داری که سرعتش تا ۱۱۰ کیلومتر در ساعت می‌رسد.',
+    answer: 'یوزپلنگ',
+  },
+  {
+    id: 'seed-nature-hard-02',
+    topic: 'طبیعت و حیوانات',
+    difficulty: 'hard',
+    hint1: 'پرنده‌ای ملی ایران که در اساطیر ایرانی نقش مهمی دارد.',
+    hint2: 'در شاهنامه زال را پرورش داد و نمادی از خرد و حمایت است.',
+    answer: 'سیمرغ',
+  },
+
+  // شخصیت‌های مشهور
+  {
+    id: 'seed-people-easy-02',
+    topic: 'شخصیت‌های مشهور',
+    difficulty: 'easy',
+    hint1: 'رهبر جنبش استقلال هند که به روش عدم خشونت معروف بود.',
+    hint2: 'لقب «مهاتما» (روح بزرگ) دارد و نمک‌زنی معروفش نماد مقاومت مدنی شد.',
+    answer: 'گاندی',
+  },
+  {
+    id: 'seed-people-medium-02',
+    topic: 'شخصیت‌های مشهور',
+    difficulty: 'medium',
+    hint1: 'ریاضیدان ایرانی که اولین زن برنده مدال فیلدز شد.',
+    hint2: 'متخصص هندسه و سیستم‌های دینامیکی بود و در سال ۲۰۱۷ درگذشت.',
+    answer: 'مریم میرزاخانی',
   },
 ]

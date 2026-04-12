@@ -70,12 +70,7 @@ export default function Tile({ tile, onSelect }) {
       {tile.type === 'water' && <WaterGlint />}
 
       {tile.type === 'grassland' && (
-        <>
-          <DifficultyPips difficulty={tile.difficulty} />
-          <span className="text-sm leading-none mt-0.5 tabular-nums">
-            {tile.score}
-          </span>
-        </>
+        <DifficultyPips difficulty={tile.difficulty} />
       )}
 
       {tile.type === 'house' && <span className="text-lg leading-none">🏠</span>}
@@ -91,14 +86,14 @@ function DifficultyPips({ difficulty }) {
   const filled = DIFFICULTY_PIP_COUNT[difficulty] ?? 0
   return (
     <div
-      className="flex gap-0.5"
+      className="flex gap-1.5"
       aria-label={`difficulty: ${difficulty}`}
       data-testid="difficulty-pips"
     >
       {[0, 1, 2].map((i) => (
         <span
           key={i}
-          className={`w-1 h-1 rounded-full bg-current ${
+          className={`w-2.5 h-2.5 rounded-full bg-current ${
             i < filled ? 'opacity-80' : 'opacity-20'
           }`}
         />
