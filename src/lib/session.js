@@ -13,6 +13,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  updateDoc,
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from './firebase.js'
@@ -93,4 +94,11 @@ export async function joinSession(rawCode) {
   const snap = await getDoc(doc(db, 'sessions', code))
   if (!snap.exists()) throw new SessionNotFoundError(code)
   return code
+}
+
+// Partial update of a session document. Used by the game loop to
+// write board changes, score updates, and turn switches.
+export async function updateSession(sessionId, updates) {
+  if (!db) throw new FirebaseNotConfiguredError()
+  await updateDoc(doc(db, 'sessions', sessionId), updates)
 }

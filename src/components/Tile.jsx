@@ -8,7 +8,7 @@
 //   burnt     — dark gradient with a flame glyph
 //
 // Grassland tiles are the only ones that should feel interactive to
-// the player. Click handling itself lands in Phase 4.
+// the player. `onSelect(tile)` fires when a grassland tile is clicked.
 
 const GRASSLAND_BG = {
   easy: 'bg-gradient-to-br from-lime-300 to-green-500',
@@ -24,7 +24,11 @@ const GRASSLAND_TEXT = {
 
 const DIFFICULTY_PIP_COUNT = { easy: 1, medium: 2, hard: 3 }
 
-export default function Tile({ tile }) {
+export default function Tile({ tile, onSelect }) {
+  function handleClick() {
+    if (tile.type === 'grassland' && onSelect) onSelect(tile)
+  }
+
   const base =
     'relative aspect-square flex flex-col items-center justify-center rounded-md font-bold select-none overflow-hidden transition-all duration-150 shadow-sm'
 
@@ -62,7 +66,7 @@ export default function Tile({ tile }) {
   }
 
   return (
-    <div className={`${base} ${visual} ${interactive}`}>
+    <div className={`${base} ${visual} ${interactive}`} onClick={handleClick}>
       {tile.type === 'water' && <WaterGlint />}
 
       {tile.type === 'grassland' && (
