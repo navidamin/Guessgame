@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنگ ماهی - بازی گروهی آنلاین</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .game-header h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-code {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .screen {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        h2 { color: #4a5568; margin-bottom: 20px; text-align: center; }
+        h3 { color: #4a5568; margin-bottom: 12px; }
+
+        .input-group { margin-bottom: 15px; text-align: center; }
+
+        .input-group input {
+            width: 100%;
+            max-width: 320px;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input#codeInput { letter-spacing: 4px; font-weight: 700; text-transform: uppercase; }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+            margin: 6px;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-green { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .btn-orange { background: linear-gradient(135deg, #e17055, #fdcb6e); }
+        .btn-big { font-size: 20px; padding: 18px 40px; width: 100%; max-width: 340px; }
+
+        .center { text-align: center; }
+        .muted { color: #718096; font-size: 14px; }
+
+        /* Teams */
+        .teams-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .team-box {
+            border-radius: 14px;
+            padding: 15px;
+            min-height: 120px;
+        }
+
+        .team-box.team-A { background: #ebf4ff; border: 2px solid #2b6cb0; }
+        .team-box.team-B { background: #fff5f5; border: 2px solid #c53030; }
+
+        .team-box h3 { text-align: center; }
+        .team-A h3 { color: #2b6cb0; }
+        .team-B h3 { color: #c53030; }
+
+        .player-chip {
+            background: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 6px 0;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-chip .tag { font-size: 12px; }
+
+        /* Score bar */
+        .score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 14px;
+            padding: 12px 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            gap: 10px;
+        }
+
+        .score-team {
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        .score-team.A { color: #2b6cb0; }
+        .score-team.B { color: #c53030; }
+
+        .round-chip {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Timer */
+        .timer {
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-align: center;
+            color: #4a5568;
+            line-height: 1.2;
+        }
+
+        .timer.low { color: #c53030; animation: pulse 0.6s infinite alternate; }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.12); }
+        }
+
+        /* Word card */
+        .word-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 16px;
+            padding: 35px 20px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 900;
+            margin: 15px 0;
+            box-shadow: 0 10px 25px rgba(102,126,234,0.4);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .turn-banner {
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .turn-banner.A { background: #ebf4ff; color: #2b6cb0; }
+        .turn-banner.B { background: #fff5f5; color: #c53030; }
+
+        .round-rule {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .round-rule .emoji { font-size: 2rem; }
+
+        /* Word submission list */
+        .my-words { margin-top: 15px; }
+
+        .word-item {
+            background: #f7fafc;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-right: 4px solid #667eea;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .progress-list { margin-top: 20px; }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 6px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 50%;
+            transform: translateX(50%);
+            background: #2d3748;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 100;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .winner-banner {
+            font-size: 1.6rem;
+            font-weight: 900;
+            text-align: center;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .winner-banner.A { background: #ebf4ff; color: #2b6cb0; }
+        .winner-banner.B { background: #fff5f5; color: #c53030; }
+        .winner-banner.tie { background: #f7fafc; color: #4a5568; }
+
+        @media (max-width: 480px) {
+            .container { padding: 10px; }
+            .game-header h1 { font-size: 1.7rem; }
+            .screen { padding: 18px; }
+            .word-card { font-size: 1.5rem; padding: 25px 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1>🐠 تنگ ماهی</h1>
+            <div class="game-code">کد بازی: <span id="codeDisplay">—</span></div>
+        </div>
+
+        <!-- Join / Create -->
+        <div id="joinScreen" class="screen">
+            <h2>به بازی تنگ ماهی خوش آمدید!</h2>
+            <p class="center muted" style="margin-bottom:20px">
+                کلمه بنویسید، حدس بزنید و در سه دور هیجان‌انگیز با تیم‌تان برنده شوید:
+                توضیح آزاد، یک کلمه، پانتومیم!
+            </p>
+            <div class="input-group">
+                <input type="text" id="nameInput" placeholder="نام شما" maxlength="20">
+            </div>
+            <div class="input-group">
+                <input type="text" id="codeInput" placeholder="کد بازی (برای پیوستن)" maxlength="4" autocapitalize="characters">
+            </div>
+            <div class="center">
+                <button class="btn" id="joinBtn">پیوستن به بازی</button>
+                <button class="btn btn-green" id="createBtn">ساخت بازی جدید</button>
+            </div>
+        </div>
+
+        <!-- Lobby -->
+        <div id="lobbyScreen" class="screen hidden">
+            <h2>اتاق انتظار</h2>
+            <p class="center muted">کد بازی را به دوستان‌تان بگویید تا بپیوندند</p>
+            <div class="teams-grid">
+                <div class="team-box team-A">
+                    <h3>🔵 تیم آبی</h3>
+                    <div id="lobbyTeamA"></div>
+                </div>
+                <div class="team-box team-B">
+                    <h3>🔴 تیم قرمز</h3>
+                    <div id="lobbyTeamB"></div>
+                </div>
+            </div>
+            <div class="center">
+                <button class="btn btn-orange" id="switchTeamBtn">تغییر تیم</button>
+            </div>
+            <div id="hostSettings" class="center hidden" style="margin-top:15px">
+                <div class="input-group">
+                    <label class="muted">تعداد کلمه برای هر نفر: </label>
+                    <select id="wordsPerPlayer" style="padding:8px;border-radius:8px;border:2px solid #e2e8f0;font-family:inherit">
+                        <option value="2">۲</option>
+                        <option value="3" selected>۳</option>
+                        <option value="4">۴</option>
+                        <option value="5">۵</option>
+                    </select>
+                    <label class="muted" style="margin-right:15px">زمان هر نوبت: </label>
+                    <select id="turnSeconds" style="padding:8px;border-radius:8px;border:2px solid #e2e8f0;font-family:inherit">
+                        <option value="30">۳۰ ثانیه</option>
+                        <option value="45">۴۵ ثانیه</option>
+                        <option value="60" selected>۶۰ ثانیه</option>
+                        <option value="90">۹۰ ثانیه</option>
+                    </select>
+                </div>
+                <button class="btn btn-big btn-green" id="toWritingBtn">شروع نوشتن کلمه‌ها</button>
+            </div>
+            <p id="lobbyWaitMsg" class="center muted hidden" style="margin-top:15px">منتظر شروع بازی توسط میزبان...</p>
+        </div>
+
+        <!-- Writing words -->
+        <div id="writingScreen" class="screen hidden">
+            <h2>✍️ کلمه‌های خود را بنویسید</h2>
+            <p class="center muted" style="margin-bottom:15px">
+                هر کلمه یا عبارتی که دوست دارید — اسم آدم‌های مشهور، فیلم، شیء، ضرب‌المثل...
+            </p>
+            <div id="wordForm">
+                <div class="input-group">
+                    <input type="text" id="wordInput" placeholder="کلمه یا عبارت" maxlength="60">
+                </div>
+                <div class="center">
+                    <button class="btn" id="addWordBtn">افزودن کلمه</button>
+                </div>
+            </div>
+            <div class="my-words" id="myWords"></div>
+            <div class="progress-list">
+                <h3>وضعیت بازیکنان</h3>
+                <div id="writingProgress"></div>
+            </div>
+            <div class="center hidden" id="startGameWrap" style="margin-top:15px">
+                <button class="btn btn-big btn-green" id="startGameBtn">شروع بازی!</button>
+            </div>
+        </div>
+
+        <!-- Game -->
+        <div id="gameScreen" class="hidden">
+            <div class="score-bar">
+                <div class="score-team A">🔵 <span id="scoreA">۰</span></div>
+                <div class="round-chip" id="roundChip"></div>
+                <div class="score-team B"><span id="scoreB">۰</span> 🔴</div>
+            </div>
+            <div class="screen">
+                <div class="round-rule" id="roundRule"></div>
+                <div class="turn-banner" id="turnBanner"></div>
+                <div class="timer" id="timerDisplay"></div>
+                <p class="center muted" id="bowlCount"></p>
+
+                <!-- clue giver: before starting turn -->
+                <div id="giverStart" class="center hidden" style="margin-top:15px">
+                    <p style="margin-bottom:12px;font-weight:700">نوبت شماست که راهنمایی بدهید!</p>
+                    <button class="btn btn-big btn-green" id="startTurnBtn">شروع نوبت ⏱️</button>
+                </div>
+
+                <!-- clue giver: active turn -->
+                <div id="giverActive" class="hidden">
+                    <div class="word-card" id="wordCard"></div>
+                    <div class="center">
+                        <button class="btn btn-green btn-big" id="correctBtn" style="max-width:160px">✓ درست بود</button>
+                        <button class="btn btn-orange btn-big" id="skipBtn" style="max-width:160px">↻ رد کن</button>
+                    </div>
+                </div>
+
+                <!-- everyone else -->
+                <div id="watcherView" class="center hidden" style="margin-top:15px">
+                    <p id="watcherMsg" style="font-weight:700;font-size:1.2rem"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Round end -->
+        <div id="roundEndScreen" class="screen hidden">
+            <h2 id="roundEndTitle"></h2>
+            <div class="teams-grid">
+                <div class="team-box team-A center">
+                    <h3>🔵 تیم آبی</h3>
+                    <div class="timer" id="roundEndScoreA" style="font-size:2.5rem"></div>
+                </div>
+                <div class="team-box team-B center">
+                    <h3>🔴 تیم قرمز</h3>
+                    <div class="timer" id="roundEndScoreB" style="font-size:2.5rem"></div>
+                </div>
+            </div>
+            <div class="center hidden" id="nextRoundWrap">
+                <button class="btn btn-big btn-green" id="nextRoundBtn"></button>
+            </div>
+            <p id="roundEndWaitMsg" class="center muted hidden" style="margin-top:10px">منتظر میزبان...</p>
+        </div>
+
+        <!-- Finished -->
+        <div id="finishedScreen" class="screen hidden">
+            <div class="winner-banner" id="winnerBanner"></div>
+            <div class="teams-grid">
+                <div class="team-box team-A center">
+                    <h3>🔵 تیم آبی</h3>
+                    <div class="timer" id="finalScoreA" style="font-size:2.5rem"></div>
+                </div>
+                <div class="team-box team-B center">
+                    <h3>🔴 تیم قرمز</h3>
+                    <div class="timer" id="finalScoreB" style="font-size:2.5rem"></div>
+                </div>
+            </div>
+            <div class="center hidden" id="playAgainWrap">
+                <button class="btn btn-big" id="playAgainBtn">🔄 بازی دوباره</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+        import {
+            getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, runTransaction
+        } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXQxTWte4GenEBDTLxduq5dAHU_Rkt6TU",
+            authDomain: "tile-guess-game.firebaseapp.com",
+            projectId: "tile-guess-game",
+            storageBucket: "tile-guess-game.firebasestorage.app",
+            messagingSenderId: "403631515384",
+            appId: "1:403631515384:web:660036bde1acb145a33d0d"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ---------- helpers ----------
+        const $ = (id) => document.getElementById(id);
+        const fa = (n) => Number(n ?? 0).toLocaleString('fa-IR');
+
+        function toast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2600);
+        }
+
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function getPlayerId() {
+            let id = localStorage.getItem('fb_player_id');
+            if (!id) {
+                id = 'p_' + Math.random().toString(36).slice(2, 10);
+                localStorage.setItem('fb_player_id', id);
+            }
+            return id;
+        }
+
+        function genCode() {
+            const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+            let c = '';
+            for (let i = 0; i < 4; i++) c += chars[Math.floor(Math.random() * chars.length)];
+            return c;
+        }
+
+        const ROUNDS = {
+            1: { name: 'توضیح آزاد', desc: 'کلمه را با هر جمله‌ای توضیح بده — فقط خود کلمه را نگو!', emoji: '💬' },
+            2: { name: 'یک کلمه', desc: 'فقط با یک کلمه راهنمایی کن!', emoji: '1️⃣' },
+            3: { name: 'پانتومیم', desc: 'فقط با حرکات — بدون صدا و کلام!', emoji: '🎭' }
+        };
+
+        // ---------- state ----------
+        const PID = getPlayerId();
+        let CODE = null;
+        let S = null;          // latest session snapshot data
+        let unsub = null;
+        let ticker = null;
+        let endTurnAttemptFor = 0;   // endsAt value we already tried to finalize
+
+        const sessionRef = () => doc(db, 'fishbowl', CODE);
+        const me = () => S?.players?.[PID];
+        const isHost = () => S?.hostId === PID;
+
+        // ---------- session create / join ----------
+        async function createSession() {
+            const name = $('nameInput').value.trim();
+            if (!name) return toast('لطفاً نام خود را وارد کنید');
+            const code = genCode();
+            const data = {
+                code,
+                createdAt: Date.now(),
+                status: 'lobby',
+                hostId: PID,
+                wordsPerPlayer: 3,
+                turnSeconds: 60,
+                players: { [PID]: { name, team: 'A', submitted: 0 } },
+                teams: { A: { score: 0 }, B: { score: 0 } },
+                words: [],
+                bowl: [],
+                round: 1,
+                order: { A: [], B: [] },
+                turnIdx: { A: 0, B: 0 },
+                turn: { team: 'A', clueGiverId: null, active: false, endsAt: 0, currentWordId: null }
+            };
+            await setDoc(doc(db, 'fishbowl', code), data);
+            enterSession(code);
+        }
+
+        async function joinSession() {
+            const name = $('nameInput').value.trim();
+            const code = $('codeInput').value.trim().toUpperCase();
+            if (!name) return toast('لطفاً نام خود را وارد کنید');
+            if (!code) return toast('کد بازی را وارد کنید');
+            const snap = await getDoc(doc(db, 'fishbowl', code));
+            if (!snap.exists()) return toast('بازی با این کد پیدا نشد');
+            const s = snap.data();
+            if (!s.players[PID]) {
+                if (s.status !== 'lobby' && s.status !== 'writing') {
+                    return toast('این بازی شروع شده و نمی‌توان به آن پیوست');
+                }
+                const counts = { A: 0, B: 0 };
+                Object.values(s.players).forEach(p => counts[p.team]++);
+                const team = counts.A <= counts.B ? 'A' : 'B';
+                await updateDoc(doc(db, 'fishbowl', code), {
+                    [`players.${PID}`]: { name, team, submitted: 0 }
+                });
+            }
+            enterSession(code);
+        }
+
+        function enterSession(code) {
+            CODE = code;
+            localStorage.setItem('fb_last_code', code);
+            location.hash = code;
+            $('codeDisplay').textContent = code;
+            if (unsub) unsub();
+            unsub = onSnapshot(sessionRef(), (snap) => {
+                if (!snap.exists()) return;
+                S = snap.data();
+                render();
+            });
+            if (!ticker) ticker = setInterval(tick, 250);
+        }
+
+        // ---------- lobby actions ----------
+        async function switchTeam() {
+            const p = me();
+            if (!p) return;
+            await updateDoc(sessionRef(), {
+                [`players.${PID}.team`]: p.team === 'A' ? 'B' : 'A'
+            });
+        }
+
+        async function toWriting() {
+            const counts = { A: 0, B: 0 };
+            Object.values(S.players).forEach(p => counts[p.team]++);
+            if (counts.A < 1 || counts.B < 1) return toast('هر تیم باید حداقل یک بازیکن داشته باشد');
+            if (counts.A < 2 || counts.B < 2) toast('توصیه: هر تیم حداقل ۲ نفر داشته باشد');
+            await updateDoc(sessionRef(), {
+                status: 'writing',
+                wordsPerPlayer: parseInt($('wordsPerPlayer').value, 10),
+                turnSeconds: parseInt($('turnSeconds').value, 10)
+            });
+        }
+
+        // ---------- writing actions ----------
+        async function addWord() {
+            const text = $('wordInput').value.trim();
+            if (!text) return;
+            const p = me();
+            if (!p) return;
+            if (p.submitted >= S.wordsPerPlayer) return toast('شما همه کلمه‌های خود را نوشته‌اید');
+            const word = { id: 'w_' + Math.random().toString(36).slice(2, 10), text, by: PID };
+            await runTransaction(db, async (tx) => {
+                const snap = await tx.get(sessionRef());
+                const s = snap.data();
+                if (s.players[PID].submitted >= s.wordsPerPlayer) return;
+                tx.update(sessionRef(), {
+                    words: [...s.words, word],
+                    [`players.${PID}.submitted`]: s.players[PID].submitted + 1
+                });
+            });
+            $('wordInput').value = '';
+            $('wordInput').focus();
+        }
+
+        function allSubmitted(s) {
+            return Object.values(s.players).every(p => p.submitted >= s.wordsPerPlayer);
+        }
+
+        async function startGame() {
+            await runTransaction(db, async (tx) => {
+                const snap = await tx.get(sessionRef());
+                const s = snap.data();
+                if (s.status !== 'writing' || s.words.length === 0) return;
+                const order = { A: [], B: [] };
+                Object.entries(s.players).forEach(([id, p]) => order[p.team].push(id));
+                order.A = shuffle(order.A);
+                order.B = shuffle(order.B);
+                const firstTeam = Math.random() < 0.5 ? 'A' : 'B';
+                tx.update(sessionRef(), {
+                    status: 'playing',
+                    round: 1,
+                    order,
+                    bowl: shuffle(s.words.map(w => w.id)),
+                    turnIdx: { A: firstTeam === 'A' ? 1 : 0, B: firstTeam === 'B' ? 1 : 0 },
+                    turn: { team: firstTeam, clueGiverId: order[firstTeam][0], active: false, endsAt: 0, currentWordId: null }
+                });
+            });
+        }
+
+        // ---------- turn logic ----------
+        // returns update-map that hands the turn to the other team's next clue giver
+        function advanceTurnUpdates(s) {
+            const next = s.turn.team === 'A' ? 'B' : 'A';
+            const order = s.order[next];
+            const idx = s.turnIdx[next] % order.length;
+            return {
+                'turn.team': next,
+                'turn.clueGiverId': order[idx],
+                [`turnIdx.${next}`]: s.turnIdx[next] + 1
+            };
+        }
+
+        async function startTurn() {
+            await runTransaction(db, async (tx) => {
+                const snap = await tx.get(sessionRef());
+                const s = snap.data();
+                if (s.status !== 'playing' || s.turn.active || s.turn.clueGiverId !== PID) return;
+                const bowl = [...s.bowl];
+                if (bowl.length === 0) return;
+                const i = Math.floor(Math.random() * bowl.length);
+                const wordId = bowl.splice(i, 1)[0];
+                tx.update(sessionRef(), {
+                    bowl,
+                    'turn.active': true,
+                    'turn.endsAt': Date.now() + s.turnSeconds * 1000,
+                    'turn.currentWordId': wordId
+                });
+            });
+        }
+
+        async function markCorrect() {
+            await runTransaction(db, async (tx) => {
+                const snap = await tx.get(sessionRef());
+                const s = snap.data();
+                if (s.status !== 'playing' || !s.turn.active || s.turn.clueGiverId !== PID) return;
+                const team = s.turn.team;
+                const updates = { [`teams.${team}.score`]: s.teams[team].score + 1 };
+                const bowl = [...s.bowl];
+                if (bowl.length === 0) {
+                    // bowl is empty: this round is over
+                    updates['turn.active'] = false;
+                    updates['turn.currentWordId'] = null;
+                    updates['turn.endsAt'] = 0;
+                    Object.assign(updates, advanceTurnUpdates(s));
+                    updates.status = s.round >= 3 ? 'finished' : 'roundEnd';
+                } else {
+                    const i = Math.floor(Math.random() * bowl.length);
+                    updates['turn.currentWordId'] = bowl.splice(i, 1)[0];
+                    updates.bowl = bowl;
+                }
+                tx.update(sessionRef(), updates);
+            });
+        }
+
+        async function skipWord() {
+            await runTransaction(db, async (tx) => {
+                const snap = await tx.get(sessionRef());
+                const s = snap.data();
+                if (s.status !== 'playing' || !s.turn.active || s.turn.clueGiverId !== PID) return;
+                const bowl = [...s.bowl];
+                if (bowl.length === 0) return; // nothing to swap with
+                const i = Math.floor(Math.random() * bowl.length);
+                const newWordId = bowl.splice(i, 1)[0];
+                bowl.push(s.turn.currentWordId);
+                tx.update(sessionRef(), { bowl, 'turn.currentWordId': newWordId });
+            });
+        }
+
+        async function endTurn() {
+            await runTransaction(db, async (tx) => {
+                const snap = await tx.get(sessionRef());
+                const s = snap.data();
+                if (s.status !== 'playing' || !s.turn.active) return;
+                if (Date.now() < s.turn.endsAt - 500) return;
+                const bowl = [...s.bowl];
+                if (s.turn.currentWordId) bowl.push(s.turn.currentWordId);
+                const updates = {
+                    bowl,
+                    'turn.active': false,
+                    'turn.currentWordId': null,
+                    'turn.endsAt': 0,
+                    ...advanceTurnUpdates(s)
+                };
+                tx.update(sessionRef(), updates);
+            });
+        }
+
+        async function nextRound() {
+            await runTransaction(db, async (tx) => {
+                const snap = await tx.get(sessionRef());
+                const s = snap.data();
+                if (s.status !== 'roundEnd') return;
+                tx.update(sessionRef(), {
+                    status: 'playing',
+                    round: s.round + 1,
+                    bowl: shuffle(s.words.map(w => w.id))
+                });
+            });
+        }
+
+        async function playAgain() {
+            const players = {};
+            Object.entries(S.players).forEach(([id, p]) => {
+                players[id] = { ...p, submitted: 0 };
+            });
+            await updateDoc(sessionRef(), {
+                status: 'lobby',
+                players,
+                teams: { A: { score: 0 }, B: { score: 0 } },
+                words: [],
+                bowl: [],
+                round: 1,
+                turnIdx: { A: 0, B: 0 },
+                turn: { team: 'A', clueGiverId: null, active: false, endsAt: 0, currentWordId: null }
+            });
+        }
+
+        // ---------- timer tick ----------
+        function tick() {
+            if (!S || S.status !== 'playing' || !S.turn.active) return;
+            const remaining = Math.ceil((S.turn.endsAt - Date.now()) / 1000);
+            const el = $('timerDisplay');
+            el.textContent = fa(Math.max(0, remaining));
+            el.classList.toggle('low', remaining <= 10);
+            // clue giver finalizes at 0; everyone else is a safety net 3s later
+            const overdue = S.turn.clueGiverId === PID ? remaining <= 0 : remaining <= -3;
+            if (overdue && endTurnAttemptFor !== S.turn.endsAt) {
+                endTurnAttemptFor = S.turn.endsAt;
+                endTurn().catch(() => { endTurnAttemptFor = 0; });
+            }
+        }
+
+        // ---------- rendering ----------
+        const SCREENS = ['joinScreen', 'lobbyScreen', 'writingScreen', 'gameScreen', 'roundEndScreen', 'finishedScreen'];
+
+        function show(id) {
+            SCREENS.forEach(s => $(s).classList.toggle('hidden', s !== id));
+        }
+
+        function render() {
+            if (!S) return;
+            if (!me()) { show('joinScreen'); return; }
+            switch (S.status) {
+                case 'lobby': renderLobby(); break;
+                case 'writing': renderWriting(); break;
+                case 'playing': renderGame(); break;
+                case 'roundEnd': renderRoundEnd(); break;
+                case 'finished': renderFinished(); break;
+            }
+        }
+
+        function playerChips(team) {
+            return Object.entries(S.players)
+                .filter(([, p]) => p.team === team)
+                .map(([id, p]) => {
+                    const tags = [];
+                    if (id === S.hostId) tags.push('⭐');
+                    if (id === PID) tags.push('(شما)');
+                    return `<div class="player-chip"><span>${esc(p.name)}</span><span class="tag">${tags.join(' ')}</span></div>`;
+                }).join('');
+        }
+
+        function esc(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function renderLobby() {
+            show('lobbyScreen');
+            $('lobbyTeamA').innerHTML = playerChips('A') || '<p class="muted center">خالی</p>';
+            $('lobbyTeamB').innerHTML = playerChips('B') || '<p class="muted center">خالی</p>';
+            $('hostSettings').classList.toggle('hidden', !isHost());
+            $('lobbyWaitMsg').classList.toggle('hidden', isHost());
+        }
+
+        function renderWriting() {
+            show('writingScreen');
+            const p = me();
+            const done = p.submitted >= S.wordsPerPlayer;
+            $('wordForm').classList.toggle('hidden', done);
+            const mine = S.words.filter(w => w.by === PID);
+            $('myWords').innerHTML =
+                (done ? '<p class="center" style="font-weight:700;color:#00b894">✓ همه کلمه‌های شما ثبت شد</p>' : '') +
+                mine.map(w => `<div class="word-item">${esc(w.text)}</div>`).join('');
+            $('writingProgress').innerHTML = Object.values(S.players).map(pl =>
+                `<div class="progress-item"><span>${esc(pl.name)}</span><span>${pl.submitted >= S.wordsPerPlayer ? '✅' : fa(pl.submitted) + ' از ' + fa(S.wordsPerPlayer)}</span></div>`
+            ).join('');
+            const ready = allSubmitted(S);
+            $('startGameWrap').classList.toggle('hidden', !(isHost() && ready));
+        }
+
+        function renderGame() {
+            show('gameScreen');
+            const r = ROUNDS[S.round];
+            $('scoreA').textContent = fa(S.teams.A.score);
+            $('scoreB').textContent = fa(S.teams.B.score);
+            $('roundChip').textContent = `دور ${fa(S.round)} از ${fa(3)}: ${r.name}`;
+            $('roundRule').innerHTML = `<span class="emoji">${r.emoji}</span><br><strong>${r.name}</strong><br><span class="muted">${r.desc}</span>`;
+
+            const t = S.turn;
+            const giver = S.players[t.clueGiverId];
+            const teamName = t.team === 'A' ? '🔵 تیم آبی' : '🔴 تیم قرمز';
+            const banner = $('turnBanner');
+            banner.className = 'turn-banner ' + t.team;
+            banner.textContent = `نوبت ${teamName} — گوینده: ${giver ? giver.name : '؟'}`;
+
+            const inBowl = S.bowl.length + (t.currentWordId ? 1 : 0);
+            $('bowlCount').textContent = `کلمه‌های باقی‌مانده در تنگ: ${fa(inBowl)}`;
+
+            const iAmGiver = t.clueGiverId === PID;
+            $('giverStart').classList.toggle('hidden', !(iAmGiver && !t.active));
+            $('giverActive').classList.toggle('hidden', !(iAmGiver && t.active));
+            $('watcherView').classList.toggle('hidden', iAmGiver);
+
+            if (!t.active) $('timerDisplay').textContent = fa(S.turnSeconds);
+
+            if (iAmGiver && t.active) {
+                const word = S.words.find(w => w.id === t.currentWordId);
+                $('wordCard').textContent = word ? word.text : '...';
+                $('skipBtn').disabled = S.bowl.length === 0;
+            } else {
+                const myTeam = me().team;
+                if (!t.active) {
+                    $('watcherMsg').textContent = giver ? `منتظر شروع نوبت توسط ${giver.name}...` : '';
+                } else if (myTeam === t.team) {
+                    $('watcherMsg').textContent = '🗣️ حدس بزنید!';
+                } else {
+                    $('watcherMsg').textContent = '🤫 سکوت! نوبت تیم حریف است';
+                }
+            }
+        }
+
+        function renderRoundEnd() {
+            show('roundEndScreen');
+            $('roundEndTitle').textContent = `پایان دور ${fa(S.round)}: ${ROUNDS[S.round].name}`;
+            $('roundEndScoreA').textContent = fa(S.teams.A.score);
+            $('roundEndScoreB').textContent = fa(S.teams.B.score);
+            $('nextRoundWrap').classList.toggle('hidden', !isHost());
+            $('roundEndWaitMsg').classList.toggle('hidden', isHost());
+            if (isHost()) {
+                const next = ROUNDS[S.round + 1];
+                $('nextRoundBtn').textContent = `شروع دور ${fa(S.round + 1)}: ${next.name} ${next.emoji}`;
+            }
+        }
+
+        function renderFinished() {
+            show('finishedScreen');
+            const a = S.teams.A.score, b = S.teams.B.score;
+            const banner = $('winnerBanner');
+            if (a > b) { banner.className = 'winner-banner A'; banner.textContent = '🏆 تیم آبی برنده شد!'; }
+            else if (b > a) { banner.className = 'winner-banner B'; banner.textContent = '🏆 تیم قرمز برنده شد!'; }
+            else { banner.className = 'winner-banner tie'; banner.textContent = '🤝 مساوی شد!'; }
+            $('finalScoreA').textContent = fa(a);
+            $('finalScoreB').textContent = fa(b);
+            $('playAgainWrap').classList.toggle('hidden', !isHost());
+        }
+
+        // ---------- wire up ----------
+        $('createBtn').addEventListener('click', () => createSession().catch(err => toast('خطا: ' + err.message)));
+        $('joinBtn').addEventListener('click', () => joinSession().catch(err => toast('خطا: ' + err.message)));
+        $('switchTeamBtn').addEventListener('click', () => switchTeam().catch(() => {}));
+        $('toWritingBtn').addEventListener('click', () => toWriting().catch(err => toast('خطا: ' + err.message)));
+        $('addWordBtn').addEventListener('click', () => addWord().catch(err => toast('خطا: ' + err.message)));
+        $('wordInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') addWord().catch(() => {}); });
+        $('startGameBtn').addEventListener('click', () => startGame().catch(err => toast('خطا: ' + err.message)));
+        $('startTurnBtn').addEventListener('click', () => startTurn().catch(err => toast('خطا: ' + err.message)));
+        $('correctBtn').addEventListener('click', () => markCorrect().catch(() => {}));
+        $('skipBtn').addEventListener('click', () => skipWord().catch(() => {}));
+        $('nextRoundBtn').addEventListener('click', () => nextRound().catch(err => toast('خطا: ' + err.message)));
+        $('playAgainBtn').addEventListener('click', () => playAgain().catch(err => toast('خطا: ' + err.message)));
+
+        // auto-rejoin: URL hash carries the game code
+        const hashCode = location.hash.replace('#', '').toUpperCase();
+        if (hashCode) {
+            $('codeInput').value = hashCode;
+            getDoc(doc(db, 'fishbowl', hashCode)).then(snap => {
+                if (snap.exists() && snap.data().players[PID]) enterSession(hashCode);
+            }).catch(() => {});
+        }
+    </script>
+</body>
+</html>
