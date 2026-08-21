@@ -31,6 +31,11 @@ export default function Game() {
   // Turn-flow locals
   const [turnPhase, setTurnPhase] = useState('idle')
   const [selectedTile, setSelectedTile] = useState(null)
+  // Captured at tile-select time, NOT read at judge time: the live
+  // session snapshot can change mid-flow (another host screen judging
+  // first flips currentTurn), which would credit the answer to the
+  // wrong team.
+  const [actingTeam, setActingTeam] = useState(null)
   const [offeredTopics, setOfferedTopics] = useState([])
   const [question, setQuestion] = useState(null)
   const [turnError, setTurnError] = useState(null)
@@ -38,6 +43,7 @@ export default function Game() {
   function resetTurnState() {
     setTurnPhase('idle')
     setSelectedTile(null)
+    setActingTeam(null)
     setOfferedTopics([])
     setQuestion(null)
     setTurnError(null)
@@ -48,6 +54,7 @@ export default function Game() {
     if (turnPhase !== 'idle') return
     if (!session || session.status !== 'active') return
     setSelectedTile(tile)
+    setActingTeam(session.currentTurn)
     setOfferedTopics(pickRandomTopics(TOPIC_LABELS))
     setTurnPhase('topic-picking')
   }
@@ -83,7 +90,7 @@ export default function Game() {
   async function handleResult({ correct, scoreGained }) {
     setTurnPhase('applying')
     try {
-      const team = session.currentTurn
+      const team = actingTeam
       let newBoard
 
       if (correct) {
