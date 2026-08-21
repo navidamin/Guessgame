@@ -5,7 +5,7 @@ import ScoreBar from '../components/ScoreBar.jsx'
 import TopicPicker from '../components/TopicPicker.jsx'
 import QuestionCard from '../components/QuestionCard.jsx'
 import useSession from '../hooks/useSession.js'
-import { updateSession } from '../lib/session.js'
+import { updateSession, markQuestionUsed } from '../lib/session.js'
 import { fetchRandomQuestion } from '../lib/questions.js'
 import { TOPIC_LABELS } from '../lib/topics.js'
 import {
@@ -56,7 +56,11 @@ export default function Game() {
   async function handleTopicSelect(topic) {
     setTurnPhase('question-loading')
     try {
-      const q = await fetchRandomQuestion(topic, selectedTile.difficulty)
+      const q = await fetchRandomQuestion(
+        topic,
+        selectedTile.difficulty,
+        session.usedQuestionIds || []
+      )
       if (!q) {
         setTurnError(
           `سؤالی برای موضوع «${topic}» و سطح «${selectedTile.difficulty}» پیدا نشد.`
@@ -64,6 +68,9 @@ export default function Game() {
         setTurnPhase('idle')
         return
       }
+      // Mark used as soon as the question is revealed — cancelling the
+      // turn afterwards must not let the same question resurface.
+      await markQuestionUsed(sessionId, q.id)
       setQuestion(q)
       setTurnPhase('answering')
     } catch (err) {

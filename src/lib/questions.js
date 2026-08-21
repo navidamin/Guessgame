@@ -32,6 +32,16 @@ export function filterByTopicAndDifficulty(questions, topic, difficulty) {
   )
 }
 
+// Picks a random question preferring ones not yet asked in this
+// session. Only when every candidate has already been used does it
+// fall back to the full list — a repeat beats dead-ending the game
+// when the bank for a (topic, difficulty) pair runs dry.
+export function pickFreshQuestion(questions, usedIds = [], random = Math.random) {
+  const used = new Set(usedIds)
+  const fresh = questions.filter((q) => !used.has(q.id))
+  return pickRandom(fresh.length > 0 ? fresh : questions, random)
+}
+
 // Writes every seed question in a single Firestore batch. setDoc with
 // the stable id makes this idempotent — re-running overwrites instead
 // of duplicating. Returns the number of docs written.
@@ -53,10 +63,11 @@ export async function countQuestions() {
   return snap.size
 }
 
-// Fetches a random question for the given (topic, difficulty) pair.
+// Fetches a random question for the given (topic, difficulty) pair,
+// skipping ids in `usedIds` (questions already asked this session).
 // Returns null if no match exists so the caller can offer a different
 // topic rather than crashing.
-export async function fetchRandomQuestion(topic, difficulty) {
+export async function fetchRandomQuestion(topic, difficulty, usedIds = []) {
   if (!db) throw new Error('Firebase not configured')
   const q = query(
     collection(db, QUESTIONS_COLLECTION),
@@ -66,5 +77,5 @@ export async function fetchRandomQuestion(topic, difficulty) {
   const snap = await getDocs(q)
   if (snap.empty) return null
   const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
-  return pickRandom(rows)
+  return pickFreshQuestion(rows, usedIds)
 }

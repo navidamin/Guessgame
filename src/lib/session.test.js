@@ -130,4 +130,9 @@ describe('buildSessionDoc', () => {
     expect(doc.currentTurn).toBe('A')
     expect(doc.status).toBe('active')
   })
+
+  it('starts with an empty usedQuestionIds list', () => {
+    const doc = buildSessionDoc(base)
+    expect(doc.usedQuestionIds).toEqual([])
+  })
 })

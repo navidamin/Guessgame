@@ -10,6 +10,7 @@
 //
 // Components should only touch the side-effect layer.
 import {
+  arrayUnion,
   doc,
   getDoc,
   setDoc,
@@ -59,6 +60,9 @@ export function buildSessionDoc({
       B: { name: teamBName?.trim() || 'تیم قرمز', score: 0 },
     },
     board: generateBoard(code),
+    // Ids of questions already asked in this session — consulted by
+    // fetchRandomQuestion so teams don't see the same question twice.
+    usedQuestionIds: [],
   }
 }
 
@@ -101,4 +105,13 @@ export async function joinSession(rawCode) {
 export async function updateSession(sessionId, updates) {
   if (!db) throw new FirebaseNotConfiguredError()
   await updateDoc(doc(db, 'sessions', sessionId), updates)
+}
+
+// Records a question as asked in this session. arrayUnion is atomic
+// and creates the field on sessions predating usedQuestionIds.
+export async function markQuestionUsed(sessionId, questionId) {
+  if (!db) throw new FirebaseNotConfiguredError()
+  await updateDoc(doc(db, 'sessions', sessionId), {
+    usedQuestionIds: arrayUnion(questionId),
+  })
 }
