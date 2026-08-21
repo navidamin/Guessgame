@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, getDocs, limit, query } from 'firebase/firestore'
 import { db, firebaseConfigured } from '../lib/firebase.js'
 
-// Writes, reads, and confirms a tiny doc at /_healthcheck/ping to prove
-// Firestore round-trips work end-to-end. Returns:
+// Reads one doc from the questions collection to prove Firestore
+// round-trips work end-to-end. Read-only on purpose: the security
+// rules only open the game's own collections, so a write probe to a
+// scratch collection would be denied in production. Returns:
 //   'idle'     — not configured yet
 //   'checking' — call in flight
-//   'ok'       — write+read succeeded
+//   'ok'       — read succeeded
 //   'error'    — something threw (see the returned `error` for details)
 export default function useFirestoreHealth() {
   const [status, setStatus] = useState(firebaseConfigured ? 'checking' : 'idle')
@@ -18,14 +20,8 @@ export default function useFirestoreHealth() {
 
     async function run() {
       try {
-        const ref = doc(db, '_healthcheck', 'ping')
-        await setDoc(ref, {
-          at: serverTimestamp(),
-          from: 'phase1-healthcheck',
-        })
-        const snap = await getDoc(ref)
+        await getDocs(query(collection(db, 'questions'), limit(1)))
         if (cancelled) return
-        if (!snap.exists()) throw new Error('healthcheck doc missing after write')
         setStatus('ok')
       } catch (err) {
         if (cancelled) return
