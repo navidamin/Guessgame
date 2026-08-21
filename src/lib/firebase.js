@@ -4,13 +4,33 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 
+// Committed defaults for the guessgametiles project. The web config is
+// not a secret — it ships in the browser bundle to every visitor, and
+// access control lives entirely in Firestore security rules. Env vars
+// still take precedence so another Firebase project can be swapped in
+// without touching code.
+const DEFAULT_CONFIG = {
+  apiKey: 'AIzaSyB7byckPDXlYN4EvcA2-r6ksk1D6dSnI5o',
+  authDomain: 'guessgametiles.firebaseapp.com',
+  projectId: 'guessgametiles',
+  storageBucket: 'guessgametiles.firebasestorage.app',
+  messagingSenderId: '971528501901',
+  appId: '1:971528501901:web:c3b6e5afc8712a4b4240c4',
+}
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || DEFAULT_CONFIG.apiKey,
+  authDomain:
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || DEFAULT_CONFIG.authDomain,
+  projectId:
+    import.meta.env.VITE_FIREBASE_PROJECT_ID || DEFAULT_CONFIG.projectId,
+  storageBucket:
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ||
+    DEFAULT_CONFIG.storageBucket,
+  messagingSenderId:
+    import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID ||
+    DEFAULT_CONFIG.messagingSenderId,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || DEFAULT_CONFIG.appId,
 }
 
 // True when every required env var is present and not a placeholder.
